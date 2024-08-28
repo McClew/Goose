@@ -1,38 +1,114 @@
-from PIL import Image, ImageGrab
-import pytesseract as Tesseract
-import pyautogui as Gui
+# image imports
+import PIL.Image
+import PIL.ImageGrab
+import pytesseract
+import pyautogui
+
+# functionality imports
+import asyncio
+
+# user interface imports
+from tkinter import *
 
 # configurations
+gui_window_topmost = True
+gui_window_width = 400
+gui_window_height = 600
+gui_window_dimensions = str(gui_window_width) + "x" + str(gui_window_height)
 screenshot_path = "./goose_snip.png"
 screenshot_offset = 300
 tesseract_config = ('-l eng --oem 1 --psm 3')
+capture_frequency = 3
 
-# get mouse coordinates
-mouse_position = Gui.position()
+# data storage
+keywords = [
+    {"match":"nmap", "subject":"nmap"}
+]
 
-# set screenshot coordinates
-left_x = mouse_position.x - screenshot_offset
-top_y = mouse_position.y - screenshot_offset
-right_x = mouse_position.x + screenshot_offset
-bottom_y = mouse_position.y + screenshot_offset
+subjects = {
+    "nmap":{"score":0}
+}
 
-# stop coordinates being negative
-if left_x < 0:
-    left_x = 0
+# data functions
+def score_increase(subject):
+    if subject in subjects:
+        subjects[subject]["score"] += 1
+        print("[DEBUG] Subject: " + subject + " score increased")
+        print("[DEBUG] Subject: " + subject + " | Score total: " + str(subjects[subject]["score"]))
+    else:
+        print("[ERROR] Subject: " + subject + " not found")
 
-if top_y < 0:
-    top_y = 0
+# search functions
+def get_screen_data():
+    # get mouse coordinates
+    mouse_position = pyautogui.position()
 
-# set grab_box (left_x, top_y, right_x, bottom_y)
-grab_box = (left_x, top_y, right_x, bottom_y)
+    # set screenshot coordinates
+    left_x = mouse_position.x - screenshot_offset
+    top_y = mouse_position.y - screenshot_offset
+    right_x = mouse_position.x + screenshot_offset
+    bottom_y = mouse_position.y + screenshot_offset
 
-# get image
-screenshot = ImageGrab.grab(bbox = grab_box)
-screenshot.save("goose_snip.png")
-screenshot = Image.open(screenshot_path)
+    # stop coordinates being negative
+    if left_x < 0:
+        left_x = 0
 
-# convert image to text
-text = Tesseract.image_to_string(screenshot, config=tesseract_config)
+    if top_y < 0:
+        top_y = 0
 
-# print text
-print(text)
+    # set grab_box (left_x, top_y, right_x, bottom_y)
+    grab_box = (left_x, top_y, right_x, bottom_y)
+
+    # get image
+    screenshot = PIL.ImageGrab.grab(bbox = grab_box)
+    screenshot.save("goose_snip.png")
+    screenshot = PIL.Image.open(screenshot_path)
+
+    print("[DEBUG] Snapshot taken")
+
+    # convert image to text
+    string_data = pytesseract.image_to_string(screenshot, config=tesseract_config)
+
+    # convert string to array
+    array_data = string_data.lower().split()
+
+    return array_data
+
+def keyword_search(array):
+    for string in array:
+        for keyword in keywords:
+            if keyword["match"] == string:
+                print("[DEBUG] Match Found " + string + " | Subject: " + keyword["subject"])
+                score_increase(keyword["subject"])
+                break
+
+async def periodic():
+    while True:
+        search_data = get_screen_data()
+        keyword_search(search_data)
+
+        await asyncio.sleep(capture_frequency)
+
+# async functions
+def loop_periodic():
+    # create event loop
+    loop = asyncio.get_event_loop()
+
+    # run wrapper until completed or cancelled
+    loop.run_until_complete(periodic())
+
+# user interface functions
+def create_window():
+    window = Tk()
+    window.title("Goose")
+    window.geometry(gui_window_dimensions)
+    window.attributes('-topmost', gui_window_topmost)
+    window.update()
+
+# primary function
+def main():
+    create_window()
+    loop_periodic()
+
+# run...
+main()

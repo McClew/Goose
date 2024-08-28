@@ -1,7 +1,7 @@
 #!/bin/bash
 
-required_libraries=("pillow" "pytesseract" "pyautogui")
-required_packages=("tesseract-ocr")
+required_libraries=("pillow" "pytesseract" "pyautogui" "asyncio")
+required_packages=("tesseract-ocr" "python3-tk")
 
 echo "[!] Goose installer started."
 echo "[!] Installing python libraries..."
