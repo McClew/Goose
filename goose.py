@@ -1,44 +1,77 @@
+# utility imports
+import time
+import threading
+
 # image imports
 import PIL.Image
 import PIL.ImageGrab
 import pytesseract
 import pyautogui
 
-# functionality imports
-import time
-import threading
-
 # user interface imports
 from tkinter import *
 
-# configurations
+# gui configurations
 gui_window_topmost = True
 gui_window_resizable = False
 gui_window_width = 400
 gui_window_height = 600
 gui_window_dimensions = str(gui_window_width) + "x" + str(gui_window_height)
+
+# image configurations
 screenshot_path = "./goose_snip.png"
-screenshot_offset = 300
+screenshot_offset = 200
 tesseract_config = ('-l eng --oem 1 --psm 3')
-capture_frequency = 3
+
+# capture configurations
+capture_frequency = 1
+capture_buffer = 2
+minimum_score = 5
 
 # data storage
+current_subject = "none"
+
 keywords = [
-    {"match":"nmap", "subject":"nmap"}
+    {"match":"nmap", "subject":"nmap"},
+    {"match":"#nmap", "subject":"nmap"},
+    {"match":"$nmap", "subject":"nmap"},
+    {"match":"nmap.org", "subject":"nmap"},
+    {"match":"http://nmap.org", "subject":"nmap"},
+    {"match":"scan", "subject":"nmap"},
+    {"match":"port", "subject":"nmap"},
+    {"match":"netcat", "subject":"netcat"},
+    {"match":"nc", "subject":"netcat"},
+    {"match":"johntheripper", "subject":"johntheripper"},
+    {"match":"john", "subject":"johntheripper"},
+    {"match":"ripper", "subject":"johntheripper"},
+    {"match":"hash", "subject":"johntheripper"},
+    {"match":"hashcat", "subject":"hashcat"},
+    {"match":"hash", "subject":"hashcat"},
+    {"match":"cat", "subject":"hashcat"},
+    {"match":"burp", "subject":"burpsuite"},
+    {"match":"suite", "subject":"burpsuite"},
+    {"match":"community", "subject":"burpsuite"},
+    {"match":"repeater", "subject":"burpsuite"},
+    {"match":"proxy", "subject":"burpsuite"},
+    {"match":"intruder", "subject":"burpsuite"}
 ]
 
 subjects = {
-    "nmap":{"score":0}
+    "nmap":{"score":0},
+    "netcat":{"score":0},
+    "hashcat":{"score":0},
+    "johntheripper":{"score":0},
+    "burpsuite":{"score":0}
 }
 
 # data functions
 def score_increase(subject):
     if subject in subjects:
         subjects[subject]["score"] += 1
-        print("[DEBUG] Subject: " + subject + " score increased")
-        print("[DEBUG] Subject: " + subject + " | Score total: " + str(subjects[subject]["score"]))
-    else:
-        print("[ERROR] Subject: " + subject + " not found")
+
+def clear_scores():
+    for subject in subjects:
+        subjects[subject]["score"] = 0
 
 # search functions
 def get_screen_data():
@@ -66,8 +99,6 @@ def get_screen_data():
     screenshot.save("goose_snip.png")
     screenshot = PIL.Image.open(screenshot_path)
 
-    print("[DEBUG] Snapshot taken")
-
     # convert image to text
     string_data = pytesseract.image_to_string(screenshot, config=tesseract_config)
 
@@ -79,44 +110,57 @@ def get_screen_data():
 def keyword_search(array):
     for string in array:
         for keyword in keywords:
-            if keyword["match"] == string:
-                print("[DEBUG] Match Found " + string + " | Subject: " + keyword["subject"])
-                score_increase(keyword["subject"])
+            if keyword["match"] in string:
+                update_results(keyword["subject"])
                 break
 
 def periodic_capture():
     while True:
         search_data = get_screen_data()
         keyword_search(search_data)
-
         time.sleep(capture_frequency)
 
+def update_results(subject):
+    global current_subject 
+    
+    score_increase(subject)
+
+    # if new subject & meets required score
+    if subject != current_subject and subjects[subject]["score"] >= minimum_score:
+        current_subject = subject
+        destroy_children()
+        show_data(subject)
+        clear_scores()
+        time.sleep(capture_buffer)
+
 # user interface functions
-def create_window():
-    window = Tk()
+def create_window(window):
     window.title("Goose")
     #window.iconbitmap('./path')
     window.geometry(gui_window_dimensions)
     window.resizable(width=gui_window_resizable, height=gui_window_resizable)
     window.attributes('-topmost', gui_window_topmost)
 
-    return window
+    window.update()
 
-def show_data():
-    label = Label(window, text="Hello, Tkinter!")
-    label.pack()
+def destroy_children():
+    for child in window.winfo_children():
+        child.destroy()
+
+def show_data(subject):
+    label = Label(window, text=subject).pack(pady = (10, 0))
     window.update()
 
 # primary function
 def main():
-    # create & start threads
-    background = threading.Thread(target=periodic_capture)
+    # start threads  
+    ui_thread.start()
     background.start()
 
-    # create user interface
-    window.update()
+# global variables
+window = Tk()
+ui_thread = threading.Thread(target=create_window(window))
+background = threading.Thread(target=periodic_capture())
 
 # run...
-window = create_window()
-
 main()
