@@ -5,13 +5,15 @@ import pytesseract
 import pyautogui
 
 # functionality imports
-import asyncio
+import time
+import threading
 
 # user interface imports
 from tkinter import *
 
 # configurations
 gui_window_topmost = True
+gui_window_resizable = False
 gui_window_width = 400
 gui_window_height = 600
 gui_window_dimensions = str(gui_window_width) + "x" + str(gui_window_height)
@@ -82,33 +84,39 @@ def keyword_search(array):
                 score_increase(keyword["subject"])
                 break
 
-async def periodic():
+def periodic_capture():
     while True:
         search_data = get_screen_data()
         keyword_search(search_data)
 
-        await asyncio.sleep(capture_frequency)
-
-# async functions
-def loop_periodic():
-    # create event loop
-    loop = asyncio.get_event_loop()
-
-    # run wrapper until completed or cancelled
-    loop.run_until_complete(periodic())
+        time.sleep(capture_frequency)
 
 # user interface functions
 def create_window():
     window = Tk()
     window.title("Goose")
+    #window.iconbitmap('./path')
     window.geometry(gui_window_dimensions)
+    window.resizable(width=gui_window_resizable, height=gui_window_resizable)
     window.attributes('-topmost', gui_window_topmost)
+
+    return window
+
+def show_data():
+    label = Label(window, text="Hello, Tkinter!")
+    label.pack()
     window.update()
 
 # primary function
 def main():
-    create_window()
-    loop_periodic()
+    # create & start threads
+    background = threading.Thread(target=periodic_capture)
+    background.start()
+
+    # create user interface
+    window.update()
 
 # run...
+window = create_window()
+
 main()
