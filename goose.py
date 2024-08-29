@@ -21,7 +21,7 @@ window_height = 600
 window_dimensions = str(window_width) + "x" + str(window_height)
 background_colour = "#12100E"
 title_font_size = 14
-label_font_size = 11
+text_font_size = 9
 
 # image configurations
 screenshot_path = "./goose_snip.png"
@@ -46,15 +46,95 @@ keywords = [
     {"match":"nmap.org", "subject":"nmap"},
     {"match":"http://nmap.org", "subject":"nmap"},
     {"match":"scan", "subject":"nmap"},
-    {"match":"port", "subject":"nmap"}
+    {"match":"port", "subject":"nmap"},
+    {"match":"netcat", "subject":"netcat"},
+    {"match":"nc", "subject":"netcat"},
+    {"match":"johntheripper", "subject":"johntheripper"},
+    {"match":"john", "subject":"johntheripper"},
+    {"match":"ripper", "subject":"johntheripper"},
+    {"match":"hash", "subject":"johntheripper"},
+    {"match":"https://www.openwall.com/john/", "subject":"johntheripper"},
+    {"match":"solar", "subject":"johntheripper"},
+    {"match":"hashcat", "subject":"hashcat"},
+    {"match":"hash", "subject":"hashcat"},
+    {"match":"cat", "subject":"hashcat"},
+    {"match":"burp", "subject":"burpsuite"},
+    {"match":"suite", "subject":"burpsuite"},
+    {"match":"community", "subject":"burpsuite"},
+    {"match":"repeater", "subject":"burpsuite"},
+    {"match":"proxy", "subject":"burpsuite"},
+    {"match":"intruder", "subject":"burpsuite"}
 ]
 
 subjects = {
     "nmap":{"score":0, "content":[
-        "Can pass hostnames, IP addresses, networks, etc.",
-        "Ex: scanme.nmap.org, microsoft.com/24,\n",
-        code_token + "192.168.0.1;",
-        "10.0.0-255.1-254"
+        "Syntax:\n",
+        code_token + " nmap [Scan Type] [Options] {target specification} ","\n\n",
+        "Target Specification:\n",
+        " > Single IP:    ",code_token+" nmap <ip_address> ","\n",
+        " > Specific IPs: ",code_token+" nmap <ip_address> <ip_address> ","\n",
+        " > IP range:     ",code_token+" nmap <ip_address>-<quadrant> ","\n",
+        " > Domain:       ",code_token+" nmap <domain_name> ","\n",
+        " > CIDR range:   ",code_token+" nmap <ip_address>/<subnet_mask> ","\n",
+        " > From file:    ",code_token+" nmap -iL <file_name> ","\n",
+        " > Random hosts: ",code_token+" nmap -iR <number> ","\n",
+        " > Exclude IPs:  ",code_token+" nmap -exclude <ip_address> ","\n",
+        "\n",
+        "Port Specification:\n",
+        " > Single port:      ",code_token+" -p <port> ","\n",
+        " > Specific ports:   ",code_token+" -p <port>,<port> ","\n",
+        " > TCP & UDP ports:  ",code_token+" -p U:<port>,T:<port>","\n",
+        " > Port range:       ",code_token+" -p <port>-<port> ","\n",
+        " > All ports:        ",code_token+" -p- ","\n",
+        " > Service name:     ",code_token+" -p <service_name>","\n",
+        " > Fast (100 ports): ",code_token+" -F ","\n",
+        "\n",
+        "Scan Techniques:\n",
+        " > TCP SYN port scan:      ",code_token+" -sS ","\n",
+        " > TCP connect port scan:  ",code_token+" -sT ","\n",
+        " > UDP port scan:          ",code_token+" -sU ","\n",
+        " > TCP ACK port scan:      ",code_token+" -sA ","\n",
+        " > TCP Window port scan:   ",code_token+" -sW ","\n",
+        " > TCP Maimon port scan:   ",code_token+" -sM ","\n",
+        "\n",
+        "Host Discovery:\n",
+        " > List targets only:      ",code_token+" -sL ","\n",
+        " > Disable port scan:      ",code_token+" -sn ","\n",
+        " > Disable host disovery:  ",code_token+" -Pn ","\n",
+        " > TCP SYN scan on port:   ",code_token+" -PS<port> ","\n",
+        " > TCP ACK scan on port:   ",code_token+" -PA<port> ","\n",
+        " > UDP scan on port:       ",code_token+" -PU<port> ","\n",
+        " > ARP discovery local:    ",code_token+" -PR ","\n",
+        " > Disable DNS resolution: ",code_token+" -n  ","\n",
+        "\n",
+        "Service & version Detection:\n",
+        " > Version detection: ",code_token+" -sV ","\n",
+        " > Intensity level:   ",code_token+" -sV -version-intensity <0-9> ","\n",
+        " > Minimum intensity: ",code_token+" -sV -version-light ","\n",
+        " > Maximum intensity: ",code_token+" -sV -version-all ","\n",
+        "\n",
+        "OS Detction:\n",
+        " > OS detection:           ",code_token+" -O ","\n",
+        " > Cancel scan if no port: ",code_token+" -O -osscan-limit ","\n",
+        " > Agressive guessing:     ",code_token+" -O -osscan-guess ","\n",
+        " > Max allowed attempts    ",code_token+" -O -max-os-tries <number> ","\n",
+        "\n",
+        "Timing Pre-set:\n",
+        " > Paranoid  (IDS evasive): ",code_token+" -T0 ","\n",
+        " > Sneaky    (IDS evasive): ",code_token+" -T1 ","\n",
+        " > Polite (less resources): ",code_token+" -T2 ","\n",
+        " > Normal        (default): ",code_token+" -T3 ","\n",
+        " > Aggressive       (fast): ",code_token+" -T4 ","\n",
+        " > Insane       (too fast): ",code_token+" -T5 ","\n",
+        "\n",
+        "Timing & Performance:\n",
+        " > Timout time (s/m/h):          ",code_token+" -host-timeout <time> ","\n",
+        " > Max scan retries:             ",code_token+" -max-retries <number> ","\n",
+        " > Min packet rate (per second): ",code_token+" -min-rate <number> ","\n",
+        " > Max packet rate (per second): ",code_token+" -max-rate <number> ","\n",
+        "Misc:\n",
+        " > Agressive mode:    ",code_token+" -A ","\n",
+        "   Enables OS 7 version detection, script scanning and traceroute.\n"
     ]},
     "netcat":{"score":0},
     "hashcat":{"score":0},
@@ -136,7 +216,6 @@ def update_results(subject):
 # user interface functions
 def create_window(window):
     window.title("Goose")
-    #window.iconbitmap('./path')
     window.geometry(window_dimensions)
     window.resizable(width=window_resizable, height=window_resizable)
     window.attributes('-topmost', window_topmost)
@@ -156,27 +235,30 @@ def show_data(subject):
         justify=CENTER,
         padx=0,
         pady=8,
-        font=("Arial", title_font_size, "bold"),
-        bg=background_colour,
-        ).pack()
-    
+        font=("monospace", title_font_size, "bold"),
+        bg=background_colour)
+    title.place(x = 0, y = 0, height = 40, width = window_width)
+
     # create text widget for content
     text = Text(window,
-        font=("Arial", label_font_size),
+        font=("monospace", text_font_size),
         bg=background_colour,
         padx=8,
         pady=2,
         wrap=WORD,
         borderwidth=0,
-        highlightthickness=0)
-    text.config(state=NORMAL)
+        highlightthickness=0,
+        state=NORMAL)
+    text.place(x = 0, y = 50, height = window_height-50, width = window_width)
+
+    scrollbar = Scrollbar(window, orient="vertical", command=text.yview)
+    scrollbar.place(x = window_width - 12, y = 50, height = window_height - 50, width = 12)
+
+    text['yscrollcommand'] = scrollbar.set
 
     # styling configurations
-    text.tag_configure("code_style", 
-        background='Light Grey',
-        foreground=background_colour)
+    text.tag_configure("code_style", background='Light Grey', foreground=background_colour)
 
-    # get content
     content = subjects[subject]["content"]
 
     # add content to text widget line by line
@@ -190,9 +272,8 @@ def show_data(subject):
     
     # make widget non-editable
     text.config(state=DISABLED)
-    text.pack()
 
-    window.update()
+    window.mainloop()
 
 # primary function
 def main():
