@@ -13,15 +13,21 @@ import pyautogui
 # user interface imports
 from tkinter import *
 
+# colour configurations
+deep_grey = "#12100E"
+ubuntu_grey = "#3C3C3B"
+terminal_green = "#00FF00"
+
 # gui configurations
 window_topmost = True
 window_resizable = False
 window_width = 400
 window_height = 600
 window_dimensions = str(window_width) + "x" + str(window_height)
-background_colour = "#12100E"
+background_colour = ubuntu_grey
+highlight_colour = terminal_green
 title_font_size = 14
-text_font_size = 9
+text_font_size = 10
 
 # image configurations
 screenshot_path = "./goose_snip.png"
@@ -257,7 +263,7 @@ def show_data(subject):
     text['yscrollcommand'] = scrollbar.set
 
     # styling configurations
-    text.tag_configure("code_style", background='Light Grey', foreground=background_colour)
+    text.tag_configure("code_style", background=highlight_colour, foreground=background_colour, font=("monospace", text_font_size, "bold"))
 
     content = subjects[subject]["content"]
 
