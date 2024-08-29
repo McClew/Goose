@@ -1,5 +1,7 @@
 # utility imports
 import time
+import numpy
+import re
 import threading
 
 # image imports
@@ -12,11 +14,14 @@ import pyautogui
 from tkinter import *
 
 # gui configurations
-gui_window_topmost = True
-gui_window_resizable = False
-gui_window_width = 400
-gui_window_height = 600
-gui_window_dimensions = str(gui_window_width) + "x" + str(gui_window_height)
+window_topmost = True
+window_resizable = False
+window_width = 400
+window_height = 600
+window_dimensions = str(window_width) + "x" + str(window_height)
+background_colour = "#12100E"
+title_font_size = 14
+label_font_size = 11
 
 # image configurations
 screenshot_path = "./goose_snip.png"
@@ -28,6 +33,9 @@ capture_frequency = 1
 capture_buffer = 2
 minimum_score = 5
 
+# text modifiers
+code_token = "<|code|>"
+
 # data storage
 current_subject = "none"
 
@@ -38,26 +46,16 @@ keywords = [
     {"match":"nmap.org", "subject":"nmap"},
     {"match":"http://nmap.org", "subject":"nmap"},
     {"match":"scan", "subject":"nmap"},
-    {"match":"port", "subject":"nmap"},
-    {"match":"netcat", "subject":"netcat"},
-    {"match":"nc", "subject":"netcat"},
-    {"match":"johntheripper", "subject":"johntheripper"},
-    {"match":"john", "subject":"johntheripper"},
-    {"match":"ripper", "subject":"johntheripper"},
-    {"match":"hash", "subject":"johntheripper"},
-    {"match":"hashcat", "subject":"hashcat"},
-    {"match":"hash", "subject":"hashcat"},
-    {"match":"cat", "subject":"hashcat"},
-    {"match":"burp", "subject":"burpsuite"},
-    {"match":"suite", "subject":"burpsuite"},
-    {"match":"community", "subject":"burpsuite"},
-    {"match":"repeater", "subject":"burpsuite"},
-    {"match":"proxy", "subject":"burpsuite"},
-    {"match":"intruder", "subject":"burpsuite"}
+    {"match":"port", "subject":"nmap"}
 ]
 
 subjects = {
-    "nmap":{"score":0},
+    "nmap":{"score":0, "content":[
+        "Can pass hostnames, IP addresses, networks, etc.",
+        "Ex: scanme.nmap.org, microsoft.com/24,\n",
+        code_token + "192.168.0.1;",
+        "10.0.0-255.1-254"
+    ]},
     "netcat":{"score":0},
     "hashcat":{"score":0},
     "johntheripper":{"score":0},
@@ -108,8 +106,10 @@ def get_screen_data():
     return array_data
 
 def keyword_search(array):
+    random_keywords = numpy.random.permutation(keywords)
+
     for string in array:
-        for keyword in keywords:
+        for keyword in random_keywords:
             if keyword["match"] in string:
                 update_results(keyword["subject"])
                 break
@@ -137,9 +137,10 @@ def update_results(subject):
 def create_window(window):
     window.title("Goose")
     #window.iconbitmap('./path')
-    window.geometry(gui_window_dimensions)
-    window.resizable(width=gui_window_resizable, height=gui_window_resizable)
-    window.attributes('-topmost', gui_window_topmost)
+    window.geometry(window_dimensions)
+    window.resizable(width=window_resizable, height=window_resizable)
+    window.attributes('-topmost', window_topmost)
+    window.config(background = background_colour)
 
     window.update()
 
@@ -148,7 +149,49 @@ def destroy_children():
         child.destroy()
 
 def show_data(subject):
-    label = Label(window, text=subject).pack(pady = (10, 0))
+    # create title
+    title = Label(window,
+        text=subject,
+        anchor=CENTER,
+        justify=CENTER,
+        padx=0,
+        pady=8,
+        font=("Arial", title_font_size, "bold"),
+        bg=background_colour,
+        ).pack()
+    
+    # create text widget for content
+    text = Text(window,
+        font=("Arial", label_font_size),
+        bg=background_colour,
+        padx=8,
+        pady=2,
+        wrap=WORD,
+        borderwidth=0,
+        highlightthickness=0)
+    text.config(state=NORMAL)
+
+    # styling configurations
+    text.tag_configure("code_style", 
+        background='Light Grey',
+        foreground=background_colour)
+
+    # get content
+    content = subjects[subject]["content"]
+
+    # add content to text widget line by line
+    for line in content:
+        if code_token in line:
+            # remove token & insert
+            line = line.replace(code_token, "")
+            text.insert(END, line, "code_style")
+        else:
+            text.insert(END, line)
+    
+    # make widget non-editable
+    text.config(state=DISABLED)
+    text.pack()
+
     window.update()
 
 # primary function

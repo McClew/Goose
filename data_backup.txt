@@ -1,0 +1,44 @@
+# data backup
+
+keywords = [
+    {"match":"nmap", "subject":"nmap"},
+    {"match":"#nmap", "subject":"nmap"},
+    {"match":"$nmap", "subject":"nmap"},
+    {"match":"nmap.org", "subject":"nmap"},
+    {"match":"http://nmap.org", "subject":"nmap"},
+    {"match":"scan", "subject":"nmap"},
+    {"match":"port", "subject":"nmap"},
+    {"match":"netcat", "subject":"netcat"},
+    {"match":"nc", "subject":"netcat"},
+    {"match":"johntheripper", "subject":"johntheripper"},
+    {"match":"john", "subject":"johntheripper"},
+    {"match":"ripper", "subject":"johntheripper"},
+    {"match":"hash", "subject":"johntheripper"},
+    {"match":"https://www.openwall.com/john/", "subject":"johntheripper"},
+    {"match":"solar", "subject":"johntheripper"},
+    {"match":"hashcat", "subject":"hashcat"},
+    {"match":"hash", "subject":"hashcat"},
+    {"match":"cat", "subject":"hashcat"},
+    {"match":"burp", "subject":"burpsuite"},
+    {"match":"suite", "subject":"burpsuite"},
+    {"match":"community", "subject":"burpsuite"},
+    {"match":"repeater", "subject":"burpsuite"},
+    {"match":"proxy", "subject":"burpsuite"},
+    {"match":"intruder", "subject":"burpsuite"}
+]
+
+subjects = {
+    "nmap":{"score":0, "content":[
+        "TARGET SPECIFICATION:",
+        "Can pass hostnames, IP addresses, networks, etc.",
+        "Ex: scanme.nmap.org, microsoft.com/24, 192.168.0.1; 10.0.0-255.1-254",
+        "-iL <inputfilename>: Input from list of hosts/networks",
+        "-iR <num hosts>: Choose random targets",
+        "--exclude <host1[,host2][,host3],...>: Exclude hosts/networks",
+        "--excludefile <exclude_file>: Exclude list from file"
+    ]},
+    "netcat":{"score":0},
+    "hashcat":{"score":0},
+    "johntheripper":{"score":0},
+    "burpsuite":{"score":0}
+}
