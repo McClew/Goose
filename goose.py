@@ -240,7 +240,7 @@ def show_data(subject):
         anchor=CENTER,
         justify=CENTER,
         padx=0,
-        pady=8,
+        pady=4,
         font=("monospace", title_font_size, "bold"),
         bg=background_colour)
     title.place(x = 0, y = 0, height = 40, width = window_width)
@@ -249,8 +249,8 @@ def show_data(subject):
     text = Text(window,
         font=("monospace", text_font_size),
         bg=background_colour,
-        padx=8,
-        pady=2,
+        padx=4,
+        pady=0,
         wrap=WORD,
         borderwidth=0,
         highlightthickness=0,
