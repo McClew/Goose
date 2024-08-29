@@ -21,8 +21,8 @@ terminal_green = "#00FF00"
 # gui configurations
 window_topmost = True
 window_resizable = False
-window_width = 400
-window_height = 600
+window_width = 420
+window_height = 800
 window_dimensions = str(window_width) + "x" + str(window_height)
 background_colour = ubuntu_grey
 highlight_colour = terminal_green
