@@ -25,7 +25,6 @@ class Style():
     title_colour = Colours.white
 
     # header styling
-    header_tag = "#header#"
     header_font = ["monospace", 10, "bold"]
     header_colour = Colours.white
 
@@ -34,7 +33,6 @@ class Style():
     text_colour = Colours.white
 
     # script styling
-    script_tag = "#script#"
     script_font = ["monospace", 10, "bold"]
     script_colour = Colours.ubuntu_grey
     script_background = Colours.terminal_green
@@ -113,32 +111,32 @@ class App(Tkinker.Tk):
         self.text = Tkinker.Text(self,
             font=(Style.text_font),
             padx=4,
-            pady=0,
+            pady=5,
             wrap=Tkinker.WORD,
             borderwidth=0,
             highlightthickness=0,
             state=Tkinker.NORMAL)
         
         # define content placement
-        self.text.place(x=0, y=50, height=Config.height-50, width=Config.width)
+        self.text.place(x=0, y=70, height=Config.height-70, width=Config.width)
 
         # create and place scrollbar
         self.scrollbar = Tkinker.Scrollbar(self, orient="vertical", command=self.text.yview)
-        self.scrollbar.place(x = Config.width - 12, y = 50, height = Config.height - 50, width = 12)
+        self.scrollbar.place(x = Config.width - 12, y = 70, height = Config.height - 70, width = 12)
 
         # connect scrollbar to content element
         self.text['yscrollcommand'] = self.scrollbar.set
 
         # styling configurations
         self.text.tag_configure("header_tag", foreground=Style.header_colour, font=Style.header_font)
-        self.text.tag_configure("script_tag", background=Style.script_background, foreground=Style.script_colour, font=Style.script_font)
+        self.text.tag_configure(Tags.script, background=Style.script_background, foreground=Style.script_colour, font=Style.script_font)
 
         # add content to text widget line by line
         for line in content:
             if Tags.script in line:
                 # remove token & insert
                 line = line.replace(Tags.script, "")
-                self.text.insert(Tkinker.END, line, "code_style")
+                self.text.insert(Tkinker.END, line, Tags.script)
             else:
                 self.text.insert(Tkinker.END, line)
         
