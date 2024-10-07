@@ -149,7 +149,7 @@ class App(Tkinker.Tk):
 
         # loop through subjects for search term
         for subject_name in Data.subjects:
-            if subject_name.upper() in search_term.upper():
+            if search_term.upper() in subject_name.upper():
                 content = Data.subjects[subject_name]["content"]
 
                 self.display_header(subject_name)
