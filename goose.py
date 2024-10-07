@@ -80,16 +80,18 @@ class App(Tkinker.Tk):
             width=1)
 
         self.search_entry = Tkinker.Entry(self)
+        self.search_entry.bind("<Return>", (lambda event: App.search(self)))
         
         self.search_button = Tkinker.Button(self,
             text="Go!",
             height=1,
             width=1,
-            command= lambda: App.search(self))
+            command=lambda: App.search(self))
 
         # define search placements
         self.finder_button.grid(row=0, column=0)
         self.search_entry.grid(row=0 ,column=1)
+        self.search_entry.focus()
         self.search_button.grid(row=0, column=2)
 
     def display_header(self, title_string):
