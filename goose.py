@@ -43,7 +43,7 @@ class Style():
 class Config():
     # tkinker configs
     topmost = True
-    resizable = False
+    resizable = True
     width = 420
     height = 800
 
@@ -87,10 +87,10 @@ class App(Tkinker.Tk):
             command=lambda: App.search(self))
 
         # define search placements
-        self.finder_button.grid(row=0, column=0)
-        self.search_entry.grid(row=0 ,column=1)
+        self.finder_button.grid(row=0, column=1, sticky=Tkinker.E)
+        self.search_entry.grid(row=0, column=1)
         self.search_entry.focus()
-        self.search_button.grid(row=0, column=2)
+        self.search_button.grid(row=0, column=1, sticky=Tkinker.W)
 
     def display_header(self, title_string):
         # define title config
@@ -104,25 +104,25 @@ class App(Tkinker.Tk):
             bg=Style.background_colour)
         
         # define title placement
-        self.title.grid(row=1, column=0)
+        self.title.grid(row=1, column=0, columnspan=2, sticky=Tkinker.EW)
 
     def display_results(self, content):
         # define content config
         self.text = Tkinker.Text(self,
             font=(Style.text_font),
-            padx=4,
-            pady=5,
             wrap=Tkinker.WORD,
             borderwidth=0,
             highlightthickness=0,
             state=Tkinker.NORMAL)
         
         # define content placement
-        self.text.place(x=0, y=70, height=Config.height-70, width=Config.width)
+        #self.text.place(x=0, y=70, height=Config.height-70, width=Config.width)
+        self.text.grid(row=2, column=0, columnspan=2, sticky=Tkinker.NS)
 
         # create and place scrollbar
         self.scrollbar = Tkinker.Scrollbar(self, orient="vertical", command=self.text.yview)
-        self.scrollbar.place(x = Config.width - 12, y = 70, height = Config.height - 70, width = 12)
+        #self.scrollbar.place(x = Config.width - 12, y = 70, height = Config.height - 70, width = 12)
+        self.scrollbar.grid(row=2, column=2, sticky=Tkinker.E)
 
         # connect scrollbar to content element
         self.text['yscrollcommand'] = self.scrollbar.set
